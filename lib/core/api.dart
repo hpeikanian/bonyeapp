@@ -302,7 +302,7 @@ class BonyeApi extends ChangeNotifier {
         body: {
           'mobile': normalizeDigits(mobile.trim()),
           'password': password,
-          'device_name': 'bonYe Android',
+          'device_name': kIsWeb ? 'bonYe Web' : 'bonYe Android',
         },
       ),
     );
@@ -326,7 +326,7 @@ class BonyeApi extends ChangeNotifier {
         body: {
           'challenge_id': challenge,
           'code': normalizeDigits(code.trim()),
-          'device_name': 'bonYe Android',
+          'device_name': kIsWeb ? 'bonYe Web' : 'bonYe Android',
           if (name != null) 'name': name,
           if (password != null) 'new_password': password,
         },

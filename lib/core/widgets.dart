@@ -1,5 +1,6 @@
 import 'language.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'api.dart';
 
@@ -17,7 +18,9 @@ Future<void> externalLink(String url) async {
   if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
     throw ApiError('invalid_link');
   }
-  if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+  if (!await launchUrl(uri,
+      mode: LaunchMode.externalApplication,
+      webOnlyWindowName: kIsWeb ? '_self' : null)) {
     throw ApiError('link_failed');
   }
 }

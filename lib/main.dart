@@ -1,6 +1,7 @@
 import 'core/language.dart';
 import 'core/brand.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'core/api.dart';
@@ -14,12 +15,14 @@ import 'screens/account.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'pet.bonye.customer.audio',
-    androidNotificationChannelName: 'bonYe! Podcasts',
-    androidNotificationOngoing: true,
-    androidNotificationIcon: 'drawable/bonye_notification',
-  );
+  if (!kIsWeb) {
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'pet.bonye.customer.audio',
+      androidNotificationChannelName: 'bonYe! Podcasts',
+      androidNotificationOngoing: true,
+      androidNotificationIcon: 'drawable/bonye_notification',
+    );
+  }
   await appLanguage.restore();
   final api = BonyeApi();
   await api.restore();

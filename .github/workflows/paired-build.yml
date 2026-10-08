@@ -1,0 +1,61 @@
+name: Verify Android and web together
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lib/**'
+      - 'assets/**'
+      - 'pubspec.*'
+      - 'test/**'
+      - 'android/**'
+      - '.github/workflows/paired-build.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  paired:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: android-app
+      - uses: actions/checkout@v4
+        with:
+          repository: hpeikanian/bonye-webapp
+          ref: main
+          path: webapp
+          token: ${{ secrets.BONYE_WEB_TOKEN || github.token }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.3'
+          cache: true
+      - name: Verify common source and Android
+        working-directory: android-app
+        run: |
+          flutter pub get --enforce-lockfile
+          flutter analyze
+          flutter test
+          flutter build apk --debug --target-platform android-arm64
+      - name: Build web with exactly the same source revision
+        run: |
+          python3 webapp/tool/sync_source.py android-app
+          cd webapp
+          ./tool/build_web.sh
+          flutter test test/podcast_cache_browser.dart --platform chrome
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-debug
+          path: android-app/build/app/outputs/flutter-apk/app-debug.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webapp
+          path: webapp/build/web/
+          include-hidden-files: true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shared-source-revision
+          path: webapp/source-revision.json

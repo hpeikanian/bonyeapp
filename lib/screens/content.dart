@@ -1,15 +1,11 @@
 import '../core/language.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:http/http.dart' as http;
 import '../core/api.dart';
-import '../core/podcast_metadata.dart';
+import '../core/podcast_files.dart';
 import '../core/widgets.dart';
 
 class ContentPage extends StatefulWidget {
@@ -244,89 +240,6 @@ class ContentDetail extends StatelessWidget {
       );
 }
 
-class PodcastFiles {
-  static Future<Directory> directory() async {
-    final root = await getApplicationDocumentsDirectory();
-    return Directory('${root.path}/podcasts')..createSync(recursive: true);
-  }
-
-  static Future<File> audio(int id) async =>
-      File('${(await directory()).path}/$id.audio');
-  static Future<List<Json>> list() async {
-    final d = await directory();
-    final result = <Json>[];
-    for (final f in d.listSync().whereType<File>().where(
-          (f) => f.path.endsWith('.json'),
-        )) {
-      try {
-        final item = jsonDecode(await f.readAsString()) as Json;
-        if (await (await audio(item['id'] as int)).exists()) {
-          result.add(publicPodcastMetadata(item));
-        }
-      } catch (_) {
-        /* Ignore incomplete metadata. */
-      }
-    }
-    return result;
-  }
-
-  static Future<void> download(Json content) async {
-    final id = content['id'] as int;
-    final url = Uri.parse(content['audio_url'] as String);
-    if (url.scheme != 'https') {
-      throw ApiError('invalid_link');
-    }
-    final target = await audio(id);
-    final temp = File('${target.path}.part');
-    final client = http.Client();
-    IOSink? sink;
-    try {
-      final response = await client
-          .send(http.Request('GET', url))
-          .timeout(const Duration(seconds: 30));
-      if (response.statusCode != 200 ||
-          (response.contentLength ?? 0) > 250 * 1024 * 1024) {
-        throw ApiError('download_failed');
-      }
-      sink = temp.openWrite();
-      var total = 0;
-      await for (final bytes in response.stream.timeout(
-        const Duration(seconds: 30),
-      )) {
-        total += bytes.length;
-        if (total > 250 * 1024 * 1024) {
-          throw ApiError('download_too_large');
-        }
-        sink.add(bytes);
-      }
-      await sink.flush();
-      await sink.close();
-      sink = null;
-      await temp.rename(target.path);
-      await File(
-        '${(await directory()).path}/$id.json',
-      ).writeAsString(jsonEncode(publicPodcastMetadata(content)));
-    } finally {
-      await sink?.close();
-      client.close();
-      if (await temp.exists()) {
-        await temp.delete();
-      }
-    }
-  }
-
-  static Future<void> remove(int id) async {
-    final f = await audio(id);
-    if (await f.exists()) {
-      await f.delete();
-    }
-    final meta = File('${(await directory()).path}/$id.json');
-    if (await meta.exists()) {
-      await meta.delete();
-    }
-  }
-}
-
 class DownloadedPage extends StatefulWidget {
   final BonyeApi api;
   const DownloadedPage({super.key, required this.api});
@@ -401,6 +314,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
   Timer? timer;
   bool loading = true, downloading = false, saving = false, downloaded = false;
   String? error, syncMessage;
+  Uri? localAudioUri;
   @override
   void initState() {
     super.initState();
@@ -418,8 +332,14 @@ class _PodcastPlayerState extends State<PodcastPlayer>
 
   Future<void> initialize() async {
     try {
-      final file = await PodcastFiles.audio(widget.content['id'] as int);
-      downloaded = await file.exists();
+      try {
+        localAudioUri =
+            await PodcastFiles.localUri(widget.content['id'] as int);
+      } catch (_) {
+        // Storage restrictions must not prevent online listening.
+        localAudioUri = null;
+      }
+      downloaded = localAudioUri != null;
       final tag = MediaItem(
         id: '${widget.content['id']}',
         title: plainText(widget.content['title']),
@@ -427,9 +347,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
       );
       await player.setAudioSource(
         AudioSource.uri(
-          downloaded
-              ? Uri.file(file.path)
-              : Uri.parse(widget.content['audio_url'] as String),
+          localAudioUri ?? Uri.parse(widget.content['audio_url'] as String),
           tag: tag,
         ),
       );
@@ -503,7 +421,10 @@ class _PodcastPlayerState extends State<PodcastPlayer>
   void dispose() {
     timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
-    unawaited(save(leaving: true).whenComplete(() => player.dispose()));
+    unawaited(save(leaving: true).whenComplete(() async {
+      await player.dispose();
+      PodcastFiles.releaseUri(localAudioUri);
+    }));
     super.dispose();
   }
 
