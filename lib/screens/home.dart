@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/widgets.dart';
 import 'reminders.dart';
+import 'orders.dart';
 
 class HomePage extends StatelessWidget {
   final BonyeApi api;
@@ -65,7 +66,7 @@ class HomePage extends StatelessWidget {
                 trailing: const ForwardChevron(),
                 onTap: () => push(
                   context,
-                  RecordsPage(api, '/orders', 'خریدهای من'),
+                  OrdersPage(api: api),
                 ),
               ),
             ),
@@ -105,7 +106,7 @@ class ProductsPage extends StatelessWidget {
       );
 }
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends StatefulWidget {
   final BonyeApi api;
   final Json product;
   final VoidCallback? onPlan;
@@ -116,12 +117,59 @@ class ProductCard extends StatelessWidget {
     this.onPlan,
   });
   @override
+  State<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends State<ProductCard> {
+  BonyeApi get api => widget.api;
+  Json get product => widget.product;
+  VoidCallback? get onPlan => widget.onPlan;
+  bool buying = false;
+  String checkoutKey = operationKey();
+  Future<void> buy() async {
+    if (buying) return;
+    setState(() => buying = true);
+    try {
+      final result = await api.request(
+          'POST', '/products/${product['variant_id']}/checkout-link',
+          body: {'quantity': 1}, key: checkoutKey);
+      final url = Uri.tryParse((result['url'] ?? '').toString());
+      if (url == null ||
+          url.scheme != 'https' ||
+          url.host != Uri.parse(api.base).host ||
+          url.port != Uri.parse(api.base).port ||
+          url.userInfo.isNotEmpty) {
+        throw ApiError('invalid_link');
+      }
+      await externalLink(url.toString());
+      checkoutKey = operationKey();
+    } catch (e) {
+      if (mounted) showError(context, e);
+    } finally {
+      if (mounted) setState(() => buying = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) => Card(
         child: Padding(
           padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              if (Uri.tryParse((product['image_url'] ?? '').toString())
+                      ?.scheme ==
+                  'https')
+                ClipRRect(
+                    borderRadius: BorderRadius.circular(18),
+                    child: Image.network(product['image_url'] as String,
+                        height: 200,
+                        width: double.infinity,
+                        fit: BoxFit.contain,
+                        errorBuilder: (_, error, stack) => const SizedBox(
+                            height: 80,
+                            child: Icon(Icons.image_not_supported_outlined)),
+                        semanticLabel: product['name']?.toString())),
               AppText(
                 '${product['name'] ?? product['sku']}',
                 translate: false,
@@ -144,6 +192,15 @@ class ProductCard extends StatelessWidget {
                       onPressed: onPlan,
                       child: const AppText('دریافت برنامه غذایی'),
                     ),
+                  FilledButton(
+                    onPressed: !buying && product['quick_buy_available'] == true
+                        ? buy
+                        : null,
+                    child: const AppText('خرید فوری'),
+                  ),
+                  if (product['quick_buy_available'] != true)
+                    const AppText(
+                        'خرید فوری هنوز فعال نیست؛ از صفحه سایت خرید کنید.'),
                   OutlinedButton(
                     onPressed: product['purchase_link_available'] != true
                         ? null
@@ -160,7 +217,7 @@ class ProductCard extends StatelessWidget {
                               }
                             }
                           },
-                    child: const AppText('خرید از سایت'),
+                    child: const AppText('مشاهده در سایت'),
                   ),
                 ],
               ),

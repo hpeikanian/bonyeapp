@@ -192,6 +192,9 @@ class _RemoteViewState extends State<RemoteView> {
 }
 
 const labels = <String, String>{
+  'branch_name': 'شعبه خرید',
+  'returned_quantity': 'تعداد مرجوعی',
+  'paid_amount': 'مبلغ پرداخت‌شده',
   'id': 'شناسه',
   'name': 'نام',
   'title': 'عنوان',
@@ -375,7 +378,9 @@ class RecordCard extends StatelessWidget {
 class RecordsPage extends StatefulWidget {
   final BonyeApi api;
   final String path, title;
-  const RecordsPage(this.api, this.path, this.title, {super.key});
+  final Widget Function(Json)? recordBuilder;
+  const RecordsPage(this.api, this.path, this.title,
+      {super.key, this.recordBuilder});
   @override
   State<RecordsPage> createState() => _RecordsPageState();
 }
@@ -441,7 +446,8 @@ class _RecordsPageState extends State<RecordsPage> {
           onRefresh: () => load(reset: true),
           child: PageBody(
             children: [
-              ...items.map(RecordCard.new),
+              ...items.map((item) =>
+                  widget.recordBuilder?.call(item) ?? RecordCard(item)),
               if (busy) const Center(child: CircularProgressIndicator()),
               if (error != null)
                 AppText(

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../core/api.dart';
 import '../core/widgets.dart';
 import 'reminders.dart';
+import 'orders.dart';
 
 class ClubPage extends StatelessWidget {
   final BonyeApi api;
@@ -50,7 +51,9 @@ class ClubPage extends StatelessWidget {
                         context,
                         e.key == '/reminders'
                             ? RemindersPage(api: api)
-                            : RecordsPage(api, e.key, e.value),
+                            : e.key == '/orders'
+                                ? OrdersPage(api: api)
+                                : RecordsPage(api, e.key, e.value),
                       ),
                     ),
                   ),

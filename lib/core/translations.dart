@@ -1,5 +1,23 @@
 // UI copy only. API values and server content are never translated on the wire.
 const englishCopy = <String, String>{
+  'شعبه خرید': 'Purchase branch',
+  'تعداد مرجوعی': 'Returned quantity',
+  'مبلغ پرداخت‌شده': 'Amount paid',
+  'اپ': 'App',
+  'وب‌سایت': 'Website',
+  'حضوری': 'In store',
+  'خرید از اپ': 'Purchased in the app',
+  'خرید آنلاین از سایت': 'Purchased online on the website',
+  'خرید حضوری از شعبه': 'Purchased in a branch',
+  'خرید حضوری': 'Purchased in store',
+  'کانال خرید مشخص نشده': 'Purchase channel not specified',
+  'جزئیات خرید': 'Order details',
+  'نام شعبه هنوز از سرور دریافت نشده است.':
+      'The branch name has not been provided by the server yet.',
+  'مشاهده در سایت': 'View on website',
+  'خرید فوری': 'Buy now',
+  'خرید فوری هنوز فعال نیست؛ از صفحه سایت خرید کنید.':
+      'Quick checkout is not available yet. Shop on our website.',
   'کیلوگرم': 'kg',
   'بسته': 'pack',
   'عدد': 'item',
