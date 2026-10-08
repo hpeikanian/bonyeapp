@@ -1,0 +1,42 @@
+{
+  "source_version": "0.1.0",
+  "api_contract": "53.0.0",
+  "passed": {
+    "dart_syntax_files": 14,
+    "request_fixtures": 15,
+    "endpoint_method_bindings": 26,
+    "android_xml": true,
+    "gradle_wrapper_checksum": true,
+    "flutter_analyze": true,
+    "flutter_tests": 10,
+    "android_sdk_installed": true,
+    "flutter_version": "3.29.3",
+    "dart_version": "3.7.2",
+    "jdk": "21.0.12.1",
+    "jdk_checksum": true,
+    "enforced_lockfile_install": true,
+    "android_build": true,
+    "apk_signature_v2": true,
+    "apk_abi": "arm64-v8a",
+    "min_sdk": 23,
+    "target_sdk": 35,
+    "setup_script_repeatable": true
+  },
+  "unrun": [
+    "device_tests",
+    "live_api_validation"
+  ],
+  "blockers": [
+    "Live HTTPS site/API requests return proxy upstream connection timeout; application response not observed."
+  ],
+  "apk": {
+    "file": "bonye-customer-v0.1.0-arm64-debug.apk",
+    "bytes": 106685123,
+    "sha256": "4c3d9e5d6a2933a659b2841565449400d5a76bb485160c44d3972ad63e89197f"
+  },
+  "limitations": [
+    "Internal debug build, not a store release.",
+    "Native dependencies produce legacy Java source/target warnings.",
+    "APK v1 metadata warnings were reported; full-file APK v2 signature verification passed."
+  ]
+}
