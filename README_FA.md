@@ -1,6 +1,6 @@
 ## دانلود نسخه آزمایشی اندروید
 
-[دانلود ZIP نصب اندروید ARM64، نسخه 0.1.0](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.1.0.zip)
+[دانلود ZIP نصب اندروید ARM64، نسخه 0.1.1](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.1.1.zip)
 
 فایل ZIP را استخراج کنید و APK داخل آن را روی گوشی اندروید ۶ یا بالاتر نصب کنید. این نسخه با امضای آزمایشی است و تست روی دستگاه واقعی هنوز انجام نشده است.
 

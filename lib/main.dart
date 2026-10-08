@@ -1,3 +1,4 @@
+import 'core/brand.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -16,7 +17,7 @@ Future<void> main() async {
     androidNotificationChannelId: 'pet.bonye.customer.audio',
     androidNotificationChannelName: 'پادکست‌های بنیه',
     androidNotificationOngoing: true,
-    androidNotificationIcon: 'drawable/bonye_icon',
+    androidNotificationIcon: 'drawable/bonye_notification',
   );
   final api = BonyeApi();
   await api.restore();
@@ -61,7 +62,7 @@ class _BonyeAppState extends State<BonyeApp> {
   @override
   Widget build(BuildContext context) => MaterialApp(
         navigatorKey: navigator,
-        title: 'بنیه | همراه پت شما',
+        title: 'bonYe!',
         debugShowCheckedModeBanner: false,
         locale: const Locale('fa'),
         supportedLocales: const [Locale('fa')],
@@ -115,7 +116,14 @@ class _CustomerShellState extends State<CustomerShell> {
     ];
     return Scaffold(
       appBar: AppBar(
-        title: const Text('bonYe!  |  بنیه'),
+        title: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            BonyeLogo(size: 36),
+            SizedBox(width: 10),
+            Text('bonYe!', textDirection: TextDirection.ltr)
+          ],
+        ),
         actions: [
           IconButton(
             tooltip: 'محصولات',
