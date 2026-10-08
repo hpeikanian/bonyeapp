@@ -1,3 +1,4 @@
+import '../core/language.dart';
 import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/widgets.dart';
@@ -11,10 +12,10 @@ class PetsPage extends StatelessWidget {
         load: () => api.request('GET', '/pets?limit=100'),
         builder: (data, reload) => PageBody(
           children: [
-            const SectionTitle(
-              'پت‌های من',
-              'هر پت، پرونده و برنامه غذایی خودش را دارد.',
-            ),
+            const BrandFeature(
+                title: 'پت‌های من',
+                subtitle: 'هر پت، پرونده و برنامه غذایی خودش را دارد.',
+                icon: Icons.pets_outlined),
             FilledButton.icon(
               onPressed: () async {
                 await Navigator.of(context).push(
@@ -25,18 +26,22 @@ class PetsPage extends StatelessWidget {
                 }
               },
               icon: const Icon(Icons.add),
-              label: const Text('افزودن پت'),
+              label: const AppText('افزودن پت'),
             ),
             ...(data['items'] as List).cast<Json>().map(
                   (pet) => Card(
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(16),
-                      leading: const CircleAvatar(child: Icon(Icons.pets)),
-                      title: Text('${pet['name']}'),
-                      subtitle: Text(
+                      leading: CircleAvatar(
+                          radius: 26,
+                          backgroundColor: const Color(0xFFDCE4D8),
+                          child: Text(pet['species'] == 'cat' ? '🐱' : '🐶',
+                              style: const TextStyle(fontSize: 26))),
+                      title: AppText('${pet['name']}', translate: false),
+                      subtitle: AppText(
                         '${pet['species'] == 'cat' ? 'گربه' : 'سگ'} · ${pet['weight_kg'] ?? '—'} کیلوگرم',
                       ),
-                      trailing: const Icon(Icons.chevron_left),
+                      trailing: const ForwardChevron(),
                       onTap: () async {
                         await Navigator.of(context).push(
                           MaterialPageRoute<void>(
@@ -51,7 +56,7 @@ class PetsPage extends StatelessWidget {
                   ),
                 ),
             if ((data['items'] as List).isEmpty)
-              const Text('اولین پتت را معرفی کن تا پرونده‌اش ساخته شود.'),
+              const AppText('اولین پتت را معرفی کن تا پرونده‌اش ساخته شود.'),
           ],
         ),
       );
@@ -110,9 +115,10 @@ class _PetFormState extends State<PetForm> {
   ) =>
       DropdownButtonFormField<String>(
         value: value,
-        decoration: InputDecoration(labelText: label),
+        decoration: AppInputDecoration(
+            english: LanguageScope.of(context).english, labelText: label),
         items: values.entries
-            .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+            .map((e) => DropdownMenuItem(value: e.key, child: AppText(e.value)))
             .toList(),
         onChanged: busy
             ? null
@@ -168,8 +174,8 @@ class _PetFormState extends State<PetForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar:
-            AppBar(title: Text(widget.pet == null ? 'معرفی پت' : 'ویرایش پت')),
+        appBar: AppBar(
+            title: AppText(widget.pet == null ? 'معرفی پت' : 'ویرایش پت')),
         body: Form(
           key: form,
           onChanged: () => key = operationKey(),
@@ -179,9 +185,11 @@ class _PetFormState extends State<PetForm> {
               children: [
                 TextFormField(
                   controller: name,
-                  decoration: const InputDecoration(labelText: 'نام پت'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'نام پت'),
                   validator: (v) => v == null || v.trim().isEmpty
-                      ? 'نام پت را بنویسید.'
+                      ? tr('نام پت را بنویسید.')
                       : null,
                 ),
                 dropdown(
@@ -194,7 +202,9 @@ class _PetFormState extends State<PetForm> {
                     (v) => species = v),
                 TextFormField(
                   controller: breed,
-                  decoration: const InputDecoration(labelText: 'نژاد'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'نژاد'),
                 ),
                 OutlinedButton.icon(
                   onPressed: () async {
@@ -213,7 +223,7 @@ class _PetFormState extends State<PetForm> {
                     }
                   },
                   icon: const Icon(Icons.calendar_today),
-                  label: Text(
+                  label: AppText(
                       birth == null ? 'انتخاب تاریخ تولد' : 'تولد: $birth'),
                 ),
                 TextFormField(
@@ -221,7 +231,8 @@ class _PetFormState extends State<PetForm> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: 'وزن فعلی (کیلوگرم)',
                   ),
                   validator: (v) {
@@ -230,7 +241,7 @@ class _PetFormState extends State<PetForm> {
                     }
                     final n = double.tryParse(normalizeDigits(v));
                     return n == null || !n.isFinite || n <= 0 || n > 200
-                        ? 'وزن معتبر وارد کنید.'
+                        ? tr('وزن معتبر وارد کنید.')
                         : null;
                   },
                 ),
@@ -263,10 +274,12 @@ class _PetFormState extends State<PetForm> {
                     (v) => activity = v),
                 DropdownButtonFormField<bool>(
                   value: neutered,
-                  decoration: const InputDecoration(labelText: 'عقیم شده؟'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'عقیم شده؟'),
                   items: const [
-                    DropdownMenuItem(value: true, child: Text('بله')),
-                    DropdownMenuItem(value: false, child: Text('خیر')),
+                    DropdownMenuItem(value: true, child: AppText('بله')),
+                    DropdownMenuItem(value: false, child: AppText('خیر')),
                   ],
                   onChanged: (v) => setState(() {
                     neutered = v;
@@ -275,14 +288,15 @@ class _PetFormState extends State<PetForm> {
                 ),
                 DropdownButtonFormField<int>(
                   value: bcs,
-                  decoration: const InputDecoration(
+                  decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: 'امتیاز وضعیت بدنی (BCS)',
                   ),
                   items: List.generate(
                     9,
                     (i) => DropdownMenuItem(
                       value: i + 1,
-                      child: Text('${i + 1} از ۹'),
+                      child: AppText('${i + 1} از ۹'),
                     ),
                   ),
                   onChanged: (v) => setState(() {
@@ -290,13 +304,14 @@ class _PetFormState extends State<PetForm> {
                     key = operationKey();
                   }),
                 ),
-                const Text(
+                const AppText(
                   'BCS بهتر است با راهنمایی دامپزشک تعیین شود. مقدار نامعلوم را حدس نزنید.',
                 ),
                 TextFormField(
                   controller: conditions,
                   maxLines: 3,
-                  decoration: const InputDecoration(
+                  decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: 'بیماری، حساسیت، بارداری یا شرایط خاص',
                     helperText:
                         'موارد را با ویرگول جدا کنید؛ اگر هیچ‌کدام نیست، خالی بگذارید.',
@@ -304,7 +319,7 @@ class _PetFormState extends State<PetForm> {
                 ),
                 FilledButton(
                   onPressed: busy ? null : save,
-                  child: Text(busy ? 'در حال ذخیره…' : 'ذخیره پرونده'),
+                  child: AppText(busy ? 'در حال ذخیره…' : 'ذخیره پرونده'),
                 ),
               ],
             ),
@@ -319,7 +334,7 @@ class PetPage extends StatelessWidget {
   const PetPage({super.key, required this.api, required this.pet});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text('${pet['name']}')),
+        appBar: AppBar(title: AppText('${pet['name']}', translate: false)),
         body: PageBody(
           children: [
             InfoCard(
@@ -329,27 +344,27 @@ class PetPage extends StatelessWidget {
             ),
             FilledButton(
               onPressed: () => push(context, FeedingPage(api: api, pet: pet)),
-              child: const Text('پیشنهاد غذا و برنامه مصرف'),
+              child: const AppText('پیشنهاد غذا و برنامه مصرف'),
             ),
             OutlinedButton(
               onPressed: () => push(context, PetForm(api: api, pet: pet)),
-              child: const Text('ویرایش مشخصات'),
+              child: const AppText('ویرایش مشخصات'),
             ),
             OutlinedButton(
               onPressed: () => push(context, WeightForm(api: api, pet: pet)),
-              child: const Text('ثبت وزن جدید'),
+              child: const AppText('ثبت وزن جدید'),
             ),
             ListTile(
-              title: const Text('سابقه وزن'),
-              trailing: const Icon(Icons.chevron_left),
+              title: const AppText('سابقه وزن'),
+              trailing: const ForwardChevron(),
               onTap: () => push(
                 context,
                 RecordsPage(api, '/pets/${pet['id']}/weights', 'سابقه وزن'),
               ),
             ),
             ListTile(
-              title: const Text('برنامه‌های غذایی قبلی'),
-              trailing: const Icon(Icons.chevron_left),
+              title: const AppText('برنامه‌های غذایی قبلی'),
+              trailing: const ForwardChevron(),
               onTap: () => push(context, PlanHistory(api: api, pet: pet)),
             ),
           ],
@@ -378,7 +393,7 @@ class _WeightFormState extends State<WeightForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('ثبت وزن')),
+        appBar: AppBar(title: const AppText('ثبت وزن')),
         body: PageBody(
           children: [
             TextField(
@@ -387,7 +402,9 @@ class _WeightFormState extends State<WeightForm> {
               onChanged: (_) => key = operationKey(),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'وزن به کیلوگرم'),
+              decoration: AppInputDecoration(
+                  english: LanguageScope.of(context).english,
+                  labelText: 'وزن به کیلوگرم'),
             ),
             OutlinedButton(
               onPressed: busy
@@ -406,7 +423,7 @@ class _WeightFormState extends State<WeightForm> {
                         });
                       }
                     },
-              child: Text('تاریخ اندازه‌گیری: $date'),
+              child: AppText('تاریخ اندازه‌گیری: $date'),
             ),
             FilledButton(
               onPressed: busy
@@ -441,7 +458,7 @@ class _WeightFormState extends State<WeightForm> {
                         }
                       }
                     },
-              child: const Text('ثبت اندازه‌گیری'),
+              child: const AppText('ثبت اندازه‌گیری'),
             ),
           ],
         ),
@@ -454,7 +471,7 @@ class FeedingPage extends StatelessWidget {
   const FeedingPage({super.key, required this.api, required this.pet});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('برنامه غذایی')),
+        appBar: AppBar(title: const AppText('برنامه غذایی')),
         body: RemoteView(
           load: () => api.request('GET', '/pets/${pet['id']}/suggestions'),
           builder: (data, reload) => PageBody(
@@ -464,7 +481,7 @@ class FeedingPage extends StatelessWidget {
                 'محاسبه مصرف بر اساس اطلاعات پرونده و انرژی تأییدشده محصول انجام می‌شود.',
               ),
               if (data['status'] != 'available')
-                Text(
+                AppText(
                   <String, String>{
                         'veterinary_guidance_required':
                             'شرایط این پت به راهنمایی دامپزشک نیاز دارد؛ مقدار مصرف خودکار ارائه نمی‌شود.',
@@ -509,17 +526,19 @@ class _CreatePlanState extends State<CreatePlan> {
   String key = operationKey();
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('مقدار مصرف')),
+        appBar: AppBar(title: const AppText('مقدار مصرف')),
         body: PageBody(
           children: [
-            Text('${widget.product['name'] ?? widget.product['sku']}'),
+            AppText('${widget.product['name'] ?? widget.product['sku']}'),
             DropdownButtonFormField<int>(
               value: meals,
-              decoration: const InputDecoration(labelText: 'تعداد وعده در روز'),
+              decoration: AppInputDecoration(
+                  english: LanguageScope.of(context).english,
+                  labelText: 'تعداد وعده در روز'),
               items: List.generate(
                 12,
                 (i) => DropdownMenuItem(
-                    value: i + 1, child: Text('${i + 1} وعده')),
+                    value: i + 1, child: AppText('${i + 1} وعده')),
               ),
               onChanged: busy
                   ? null
@@ -557,10 +576,10 @@ class _CreatePlanState extends State<CreatePlan> {
                         }
                       }
                     },
-              child: Text(busy ? 'در حال محاسبه…' : 'محاسبه و ذخیره برنامه'),
+              child: AppText(busy ? 'در حال محاسبه…' : 'محاسبه و ذخیره برنامه'),
             ),
             if (result != null) PlanView(result!['plan'] as Json),
-            const Text(
+            const AppText(
               'این برنامه تخمین نیاز غذایی است. سهم تشویقی و سایر غذاها، تغییر وزن و وضعیت بدنی را با دامپزشک بررسی کنید.',
             ),
           ],
@@ -573,7 +592,7 @@ class PlanView extends StatelessWidget {
   const PlanView(this.plan, {super.key});
   String range(String field) => (plan[field] as List? ?? [])
       .map((v) => (v as num).toStringAsFixed(0))
-      .join(' تا ');
+      .join(tr(' تا '));
   @override
   Widget build(BuildContext context) => Column(
         children: [
@@ -592,7 +611,7 @@ class PlanView extends StatelessWidget {
             '${range('daily_kcal_range')} کیلوکالری',
             Icons.bolt,
           ),
-          Text('${plan['guidance'] ?? ''}',
+          AppText('${plan['guidance'] ?? ''}',
               style: const TextStyle(height: 1.8)),
         ],
       );
@@ -604,7 +623,7 @@ class PlanHistory extends StatelessWidget {
   const PlanHistory({super.key, required this.api, required this.pet});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('سابقه برنامه غذایی')),
+        appBar: AppBar(title: const AppText('سابقه برنامه غذایی')),
         body: RemoteView(
           load: () =>
               api.request('GET', '/pets/${pet['id']}/feeding-plans?limit=100'),
@@ -616,7 +635,7 @@ class PlanHistory extends StatelessWidget {
                         padding: const EdgeInsets.all(16),
                         child: Column(
                           children: [
-                            Text('${r['created_at'] ?? ''}'),
+                            AppText('${r['created_at'] ?? ''}'),
                             PlanView(r['plan'] as Json),
                           ],
                         ),
@@ -624,7 +643,7 @@ class PlanHistory extends StatelessWidget {
                     ),
                   ),
               if ((data['items'] as List).isEmpty)
-                const Text('هنوز برنامه‌ای ذخیره نشده است.'),
+                const AppText('هنوز برنامه‌ای ذخیره نشده است.'),
             ],
           ),
         ),

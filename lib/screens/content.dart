@@ -1,3 +1,4 @@
+import '../core/language.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -24,12 +25,21 @@ class _ContentPageState extends State<ContentPage> {
   Widget build(BuildContext context) => Column(
         children: [
           Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+              child: Row(children: [
+                const Icon(Icons.auto_stories_outlined, color: brand),
+                const SizedBox(width: 12),
+                Expanded(
+                    child: AppText('آموزش و مراقبت',
+                        style: Theme.of(context).textTheme.titleLarge))
+              ])),
+          Padding(
             padding: const EdgeInsets.all(12),
             child: SegmentedButton<String>(
               segments: const [
-                ButtonSegment(value: 'podcasts', label: Text('پادکست')),
-                ButtonSegment(value: 'articles', label: Text('آموزش')),
-                ButtonSegment(value: 'downloads', label: Text('دانلودها')),
+                ButtonSegment(value: 'podcasts', label: AppText('پادکست')),
+                ButtonSegment(value: 'articles', label: AppText('آموزش')),
+                ButtonSegment(value: 'downloads', label: AppText('دانلودها')),
               ],
               selected: {kind},
               onSelectionChanged: (v) => setState(() => kind = v.first),
@@ -120,13 +130,14 @@ class _ContentListState extends State<ContentList> {
                         : Icons.menu_book,
                     color: brand,
                   ),
-                  title: Text(plainText(item['title'])),
-                  subtitle: Text(
+                  title: AppText(plainText(item['title']), translate: false),
+                  subtitle: AppText(
                     plainText(item['excerpt']),
+                    translate: false,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  trailing: const Icon(Icons.chevron_left),
+                  trailing: const ForwardChevron(),
                   onTap: () => push(
                     context,
                     ContentDetail(
@@ -140,17 +151,17 @@ class _ContentListState extends State<ContentList> {
             ),
             if (busy) const Center(child: CircularProgressIndicator()),
             if (error != null)
-              Text(
+              AppText(
                 error is ApiError
                     ? (error as ApiError).message
                     : 'دریافت محتوا انجام نشد.',
               ),
             if (!busy && items.isEmpty && error == null)
-              const Text('هنوز محتوایی منتشر نشده است.'),
+              const AppText('هنوز محتوایی منتشر نشده است.'),
             if (!busy && (nextPage != null || error != null))
               OutlinedButton(
                 onPressed: () => load(reset: items.isEmpty),
-                child: Text(error == null ? 'نمایش بیشتر' : 'تلاش دوباره'),
+                child: AppText(error == null ? 'نمایش بیشتر' : 'تلاش دوباره'),
               ),
           ],
         ),
@@ -169,8 +180,8 @@ class ContentDetail extends StatelessWidget {
   });
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar:
-            AppBar(title: Text(kind == 'podcasts' ? 'پادکست آموزشی' : 'آموزش')),
+        appBar: AppBar(
+            title: AppText(kind == 'podcasts' ? 'پادکست آموزشی' : 'آموزش')),
         body: RemoteView(
           load: () => api.request('GET', '/content/$kind/$id'),
           builder: (data, reload) => kind == 'podcasts'
@@ -225,7 +236,7 @@ class ContentDetail extends StatelessWidget {
                             ? Icons.favorite
                             : Icons.favorite_border,
                       ),
-                      label: const Text('علاقه‌مندی'),
+                      label: const AppText('علاقه‌مندی'),
                     ),
                   ],
                 ),
@@ -340,22 +351,23 @@ class _DownloadedPageState extends State<DownloadedPage> {
               'پادکست‌های دانلودشده',
               'پخش فایل‌های ذخیره‌شده بدون اینترنت امکان‌پذیر است.',
             ),
-            if (s.hasError) const Text('خواندن فایل‌های دانلودشده انجام نشد.'),
+            if (s.hasError)
+              const AppText('خواندن فایل‌های دانلودشده انجام نشد.'),
             if (!s.hasData && !s.hasError)
               const Center(child: CircularProgressIndicator()),
             ...?s.data?.map(
               (item) => Card(
                 child: ListTile(
-                  title: Text(plainText(item['title'])),
+                  title: AppText(plainText(item['title']), translate: false),
                   onTap: () => push(
                     context,
                     Scaffold(
-                      appBar: AppBar(title: const Text('پادکست دانلودشده')),
+                      appBar: AppBar(title: const AppText('پادکست دانلودشده')),
                       body: PodcastPlayer(api: widget.api, content: item),
                     ),
                   ),
                   trailing: IconButton(
-                    tooltip: 'حذف دانلود',
+                    tooltip: tr('حذف دانلود'),
                     icon: const Icon(Icons.delete_outline),
                     onPressed: () async {
                       await PodcastFiles.remove(item['id'] as int);
@@ -368,7 +380,7 @@ class _DownloadedPageState extends State<DownloadedPage> {
               ),
             ),
             if (s.hasData && s.data!.isEmpty)
-              const Text('هنوز پادکستی دانلود نکرده‌اید.'),
+              const AppText('هنوز پادکستی دانلود نکرده‌اید.'),
           ],
         ),
       );
@@ -515,7 +527,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
             plainText(widget.content['excerpt']),
           ),
           if (loading) const Center(child: CircularProgressIndicator()),
-          if (error != null) Text(error!),
+          if (error != null) AppText(error!),
           if (!loading && error == null) ...[
             StreamBuilder<Duration>(
               stream: player.positionStream,
@@ -535,7 +547,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                       onChanged: (v) =>
                           player.seek(Duration(milliseconds: v.round())),
                     ),
-                    Text(
+                    AppText(
                       '${clock(position)} / ${clock(total)}',
                       textDirection: TextDirection.ltr,
                     ),
@@ -549,7 +561,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    tooltip: '۱۵ ثانیه عقب',
+                    tooltip: tr('۱۵ ثانیه عقب'),
                     icon: const Icon(Icons.replay_10),
                     onPressed: () => player.seek(
                       Duration(
@@ -561,7 +573,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                   ),
                   IconButton.filled(
                     iconSize: 42,
-                    tooltip: player.playing ? 'توقف' : 'پخش',
+                    tooltip: tr(player.playing ? 'توقف' : 'پخش'),
                     icon: Icon(
                       snapshot.data?.playing == true
                           ? Icons.pause
@@ -593,7 +605,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                     },
                   ),
                   IconButton(
-                    tooltip: '۱۵ ثانیه جلو',
+                    tooltip: tr('۱۵ ثانیه جلو'),
                     icon: const Icon(Icons.forward_10),
                     onPressed: () => player.seek(
                       Duration(
@@ -611,9 +623,12 @@ class _PodcastPlayerState extends State<PodcastPlayer>
             ),
             DropdownButtonFormField<double>(
               value: player.speed,
-              decoration: const InputDecoration(labelText: 'سرعت پخش'),
+              decoration: AppInputDecoration(
+                  english: LanguageScope.of(context).english,
+                  labelText: 'سرعت پخش'),
               items: [.75, 1.0, 1.25, 1.5, 2.0]
-                  .map((v) => DropdownMenuItem(value: v, child: Text('$v ×')))
+                  .map(
+                      (v) => DropdownMenuItem(value: v, child: AppText('$v ×')))
                   .toList(),
               onChanged: (v) async {
                 await player.setSpeed(v!);
@@ -631,7 +646,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                     ? Icons.favorite
                     : Icons.favorite_border,
               ),
-              label: const Text('علاقه‌مندی'),
+              label: const AppText('علاقه‌مندی'),
             ),
             FilledButton.icon(
               onPressed: downloading || downloaded
@@ -654,7 +669,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
                       }
                     },
               icon: const Icon(Icons.download),
-              label: Text(
+              label: AppText(
                 downloaded
                     ? 'ذخیره‌شده برای پخش آفلاین'
                     : downloading
@@ -663,7 +678,7 @@ class _PodcastPlayerState extends State<PodcastPlayer>
               ),
             ),
           ],
-          if (syncMessage != null) Text(syncMessage!),
+          if (syncMessage != null) AppText(syncMessage!),
         ],
       );
 }

@@ -41,3 +41,39 @@ class _LogoPainter extends CustomPainter {
   @override
   bool shouldRepaint(covariant _LogoPainter oldDelegate) => false;
 }
+
+/// The original logotype artwork can replace this typographic lockup without
+/// changing layouts. The brand symbol remains vector-based.
+class BrandLockup extends StatelessWidget {
+  final bool light;
+  final double symbolSize;
+  const BrandLockup({super.key, this.light = false, this.symbolSize = 76});
+  @override
+  Widget build(BuildContext context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          BonyeLogo(size: symbolSize),
+          const SizedBox(height: 12),
+          Text('bonYe!',
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                  fontFamily: 'Cormorant',
+                  fontSize: symbolSize * .62,
+                  height: 1,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: -2,
+                  color: light
+                      ? const Color(0xFFE8D8C7)
+                      : const Color(0xFF3F5544))),
+          const SizedBox(height: 8),
+          Text('P E T   F O O D',
+              textDirection: TextDirection.ltr,
+              style: TextStyle(
+                  fontSize: 10,
+                  letterSpacing: 2,
+                  color: light
+                      ? const Color(0xFFE8D8C7)
+                      : const Color(0xFF627365))),
+        ],
+      );
+}

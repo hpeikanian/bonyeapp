@@ -37,6 +37,11 @@ class ApiError implements Exception {
       'migration_required': 'ارتقای پایگاه داده باید در بنیه تکمیل شود.',
       'sms_not_configured':
           'ارسال پیامک هنوز آماده نیست؛ از ورود با رمز استفاده کنید.',
+      'auth_method_disabled': 'این روش ورود غیرفعال است.',
+      'otp_login_disabled': 'ورود پیامکی غیرفعال است.',
+      'recovery_disabled': 'بازیابی رمز غیرفعال است.',
+      'database_unavailable': 'پایگاه داده موقتاً در دسترس نیست.',
+      'recovery_required': 'برای این حساب ابتدا رمز را بازیابی کنید.',
       'registration_disabled': 'ثبت‌نام هنوز فعال نشده است.',
       'invalid_credentials': 'شماره موبایل یا رمز درست نیست.',
       'mobile_verification_required': 'شماره موبایل باید تأیید شود.',

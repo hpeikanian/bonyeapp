@@ -43,6 +43,7 @@ http.Response success(Json data) => http.Response(
         'meta': {'api_version': '1'},
       }),
       200,
+      headers: {'content-type': 'application/json; charset=utf-8'},
     );
 http.Response failure(String code, int status) => http.Response(
       jsonEncode({

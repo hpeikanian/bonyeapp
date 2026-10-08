@@ -1,3 +1,4 @@
+import '../core/language.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../core/api.dart';
@@ -12,10 +13,11 @@ class ClubPage extends StatelessWidget {
         load: () => api.request('GET', '/club'),
         builder: (data, reload) => PageBody(
           children: [
-            const SectionTitle(
-              'باشگاه بنیه',
-              'خرید، امتیاز و مزایای شما؛ یک حساب مشترک در سایت و شعب.',
-            ),
+            const BrandFeature(
+                title: 'باشگاه بنیه',
+                subtitle:
+                    'خرید، امتیاز و مزایای شما؛ یک حساب مشترک در سایت و شعب.',
+                icon: Icons.workspace_premium_outlined),
             InfoCard('امتیاز شما', '${data['points'] ?? 0}', Icons.stars),
             InfoCard(
               'سطح عضویت',
@@ -27,7 +29,7 @@ class ClubPage extends StatelessWidget {
               money(data['credit']?['amount']),
               Icons.confirmation_number_outlined,
             ),
-            const Text(
+            const AppText(
               'اعتبار باشگاه کوپن خرید است و امکان برداشت نقدی ندارد.',
             ),
             ...<String, String>{
@@ -42,8 +44,8 @@ class ClubPage extends StatelessWidget {
             }.entries.map(
                   (e) => Card(
                     child: ListTile(
-                      title: Text(e.value),
-                      trailing: const Icon(Icons.chevron_left),
+                      title: AppText(e.value),
+                      trailing: const ForwardChevron(),
                       onTap: () => push(
                         context,
                         e.key == '/reminders'
@@ -55,11 +57,11 @@ class ClubPage extends StatelessWidget {
                 ),
             FilledButton(
               onPressed: () => push(context, ConvertPoints(api: api)),
-              child: const Text('تبدیل امتیاز به اعتبار خرید'),
+              child: const AppText('تبدیل امتیاز به اعتبار خرید'),
             ),
             OutlinedButton(
               onPressed: () => push(context, ReferralPage(api: api)),
-              child: const Text('معرفی دوستان'),
+              child: const AppText('معرفی دوستان'),
             ),
           ],
         ),
@@ -86,10 +88,10 @@ class _ConvertPointsState extends State<ConvertPoints> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('تبدیل امتیاز')),
+        appBar: AppBar(title: const AppText('تبدیل امتیاز')),
         body: PageBody(
           children: [
-            const Text(
+            const AppText(
               'نرخ تبدیل و شرایط کوپن با قوانین فعلی باشگاه تعیین می‌شود.',
             ),
             TextField(
@@ -100,7 +102,9 @@ class _ConvertPointsState extends State<ConvertPoints> {
                 key = operationKey();
                 result = null;
               },
-              decoration: const InputDecoration(labelText: 'تعداد امتیاز'),
+              decoration: AppInputDecoration(
+                  english: LanguageScope.of(context).english,
+                  labelText: 'تعداد امتیاز'),
             ),
             FilledButton(
               onPressed: busy || result != null
@@ -117,16 +121,16 @@ class _ConvertPointsState extends State<ConvertPoints> {
                       final approved = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
-                          title: const Text('تبدیل امتیاز'),
-                          content: Text('$n امتیاز به کوپن خرید تبدیل شود؟'),
+                          title: const AppText('تبدیل امتیاز'),
+                          content: AppText('$n امتیاز به کوپن خرید تبدیل شود؟'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
-                              child: const Text('انصراف'),
+                              child: const AppText('انصراف'),
                             ),
                             FilledButton(
                               onPressed: () => Navigator.pop(context, true),
-                              child: const Text('تبدیل'),
+                              child: const AppText('تبدیل'),
                             ),
                           ],
                         ),
@@ -155,7 +159,7 @@ class _ConvertPointsState extends State<ConvertPoints> {
                         }
                       }
                     },
-              child: const Text('تبدیل به کوپن'),
+              child: const AppText('تبدیل به کوپن'),
             ),
             if (result != null) RecordCard(result!),
           ],
@@ -183,7 +187,7 @@ class _ReferralPageState extends State<ReferralPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('معرفی دوستان')),
+        appBar: AppBar(title: const AppText('معرفی دوستان')),
         body: RemoteView(
           load: () => widget.api.request('GET', '/club/referrals'),
           builder: (data, reload) => PageBody(
@@ -195,7 +199,7 @@ class _ReferralPageState extends State<ReferralPage> {
                     ClipboardData(text: data['code'] as String),
                   ),
                   icon: const Icon(Icons.copy),
-                  label: const Text('کپی کد معرفی'),
+                  label: const AppText('کپی کد معرفی'),
                 ),
               if (data['code'] == null)
                 FilledButton(
@@ -222,14 +226,15 @@ class _ReferralPageState extends State<ReferralPage> {
                             }
                           }
                         },
-                  child: const Text('دریافت کد معرفی'),
+                  child: const AppText('دریافت کد معرفی'),
                 ),
               if (data['has_referrer'] != true) ...[
                 TextField(
                   controller: code,
                   enabled: !busy,
                   onChanged: (_) => joinKey = operationKey(),
-                  decoration: const InputDecoration(
+                  decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: 'کد کسی که شما را معرفی کرده',
                   ),
                 ),
@@ -258,7 +263,7 @@ class _ReferralPageState extends State<ReferralPage> {
                             }
                           }
                         },
-                  child: const Text('ثبت معرف'),
+                  child: const AppText('ثبت معرف'),
                 ),
               ],
             ],

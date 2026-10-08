@@ -1,3 +1,4 @@
+import '../core/language.dart';
 import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/widgets.dart';
@@ -10,7 +11,13 @@ class AccountPage extends StatelessWidget {
       load: () => api.request('GET', '/me'),
       builder: (data, reload) => PageBody(children: [
             SectionTitle(
-                '${data['name'] ?? 'حساب من'}', '${data['mobile'] ?? ''}'),
+                '${data['name'] ?? tr('حساب من')}', '${data['mobile'] ?? ''}',
+                translateTitle: false),
+            Card(
+                child: ListTile(
+                    leading: const Icon(Icons.language),
+                    title: const AppText('زبان اپ'),
+                    trailing: const LanguagePicker())),
             RecordCard(data),
             OutlinedButton(
                 onPressed: () async {
@@ -20,20 +27,20 @@ class AccountPage extends StatelessWidget {
                     reload();
                   }
                 },
-                child: const Text('ویرایش پروفایل')),
+                child: const AppText('ویرایش پروفایل')),
             ListTile(
-                title: const Text('آدرس‌های من'),
-                trailing: const Icon(Icons.chevron_left),
+                title: const AppText('آدرس‌های من'),
+                trailing: const ForwardChevron(),
                 onTap: () => push(context, AddressesPage(api: api))),
             ListTile(
-                title: const Text('تنظیمات پیام‌ها'),
-                trailing: const Icon(Icons.chevron_left),
+                title: const AppText('تنظیمات پیام‌ها'),
+                trailing: const ForwardChevron(),
                 onTap: () => push(context, PreferencesPage(api: api))),
             ListTile(
-                title: const Text('نشست‌های فعال'),
-                trailing: const Icon(Icons.chevron_left),
+                title: const AppText('نشست‌های فعال'),
+                trailing: const ForwardChevron(),
                 onTap: () => push(context, SessionsPage(api: api))),
-            const Text(
+            const AppText(
                 'ورود به فروشگاه اینترنتی مستقل است؛ رمز یا توکن اپ به مرورگر منتقل نمی‌شود.'),
             OutlinedButton.icon(
                 onPressed: () async {
@@ -46,7 +53,7 @@ class AccountPage extends StatelessWidget {
                   }
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('خروج از حساب')),
+                label: const AppText('خروج از حساب')),
           ]));
 }
 
@@ -79,19 +86,23 @@ class _ProfileFormState extends State<ProfileForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('ویرایش پروفایل')),
+      appBar: AppBar(title: const AppText('ویرایش پروفایل')),
       body: PageBody(children: [
         TextField(
             controller: name,
             enabled: !busy,
             onChanged: (_) => key = operationKey(),
-            decoration: const InputDecoration(labelText: 'نام و نام خانوادگی')),
+            decoration: AppInputDecoration(
+                english: LanguageScope.of(context).english,
+                labelText: 'نام و نام خانوادگی')),
         TextField(
             controller: email,
             enabled: !busy,
             keyboardType: TextInputType.emailAddress,
             onChanged: (_) => key = operationKey(),
-            decoration: const InputDecoration(labelText: 'ایمیل')),
+            decoration: AppInputDecoration(
+                english: LanguageScope.of(context).english,
+                labelText: 'ایمیل')),
         FilledButton(
             onPressed: busy
                 ? null
@@ -119,7 +130,7 @@ class _ProfileFormState extends State<ProfileForm> {
                       }
                     }
                   },
-            child: const Text('ذخیره')),
+            child: const AppText('ذخیره')),
       ]));
 }
 
@@ -128,7 +139,7 @@ class AddressesPage extends StatelessWidget {
   const AddressesPage({super.key, required this.api});
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('آدرس‌های من')),
+      appBar: AppBar(title: const AppText('آدرس‌های من')),
       body: RemoteView(
           load: () => api.request('GET', '/me/addresses?limit=100'),
           builder: (data, reload) => PageBody(children: [
@@ -140,7 +151,7 @@ class AddressesPage extends StatelessWidget {
                         reload();
                       }
                     },
-                    child: const Text('افزودن آدرس')),
+                    child: const AppText('افزودن آدرس')),
                 ...(data['items'] as List)
                     .cast<Json>()
                     .map((a) => Column(children: [
@@ -155,7 +166,7 @@ class AddressesPage extends StatelessWidget {
                                   reload();
                                 }
                               },
-                              child: const Text('ویرایش آدرس'))
+                              child: const AppText('ویرایش آدرس'))
                         ])),
               ])));
 }
@@ -201,7 +212,7 @@ class _AddressFormState extends State<AddressForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('آدرس')),
+      appBar: AppBar(title: const AppText('آدرس')),
       body: Form(
           key: form,
           onChanged: () => key = operationKey(),
@@ -209,14 +220,15 @@ class _AddressFormState extends State<AddressForm> {
             ...fields.entries.map((e) => TextFormField(
                 controller: e.value,
                 enabled: !busy,
-                decoration: InputDecoration(
+                decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: e.key == 'label' ? 'عنوان آدرس' : labels[e.key]),
                 validator: (v) => !['label', 'mobile'].contains(e.key) &&
                         (v == null || v.trim().isEmpty)
-                    ? 'این مورد لازم است.'
+                    ? tr('این مورد لازم است.')
                     : null)),
             SwitchListTile(
-                title: const Text('آدرس پیش‌فرض'),
+                title: const AppText('آدرس پیش‌فرض'),
                 value: isDefault,
                 onChanged: busy
                     ? null
@@ -260,7 +272,7 @@ class _AddressFormState extends State<AddressForm> {
                           }
                         }
                       },
-                child: const Text('ذخیره آدرس')),
+                child: const AppText('ذخیره آدرس')),
           ])));
 }
 
@@ -269,18 +281,18 @@ class PreferencesPage extends StatelessWidget {
   const PreferencesPage({super.key, required this.api});
   @override
   Widget build(BuildContext context) => Scaffold(
-      appBar: AppBar(title: const Text('تنظیمات پیام‌ها')),
+      appBar: AppBar(title: const AppText('تنظیمات پیام‌ها')),
       body: RemoteView(
           load: () => api.request('GET', '/me/preferences'),
           builder: (data, reload) => PageBody(children: [
-                const Text(
+                const AppText(
                     'اعلان گوشی در API فعلی ارسال نمی‌شود؛ تنظیمات زیر مربوط به پیامک و ایمیل هستند.'),
                 ...{
                   'sms_marketing': 'پیامک پیشنهادها و آموزش',
                   'sms_transactional': 'پیامک اطلاع‌رسانی خرید',
                   'email_marketing': 'ایمیل پیشنهادها و آموزش'
                 }.entries.map((e) => SwitchListTile(
-                    title: Text(e.value),
+                    title: AppText(e.value),
                     value: data[e.key] == true,
                     onChanged: (value) async {
                       try {
@@ -305,16 +317,16 @@ class SessionsPage extends StatelessWidget {
   const SessionsPage({super.key, required this.api});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('نشست‌های فعال')),
+        appBar: AppBar(title: const AppText('نشست‌های فعال')),
         body: RemoteView(
           load: () => api.request('GET', '/auth/sessions'),
           builder: (data, reload) => PageBody(children: [
             ...(data['items'] as List).cast<Json>().map((s) => Card(
                   child: ListTile(
-                    title: Text('${s['device_name']}'),
-                    subtitle: Text('${s['created_at']}'),
+                    title: AppText('${s['device_name']}'),
+                    subtitle: AppText('${s['created_at']}'),
                     trailing: IconButton(
-                      tooltip: 'ابطال نشست',
+                      tooltip: tr('ابطال نشست'),
                       icon: const Icon(Icons.logout),
                       onPressed: () async {
                         try {
@@ -337,14 +349,14 @@ class SessionsPage extends StatelessWidget {
                   final ok = await showDialog<bool>(
                       context: context,
                       builder: (c) => AlertDialog(
-                            title: const Text('خروج از همه دستگاه‌ها؟'),
+                            title: const AppText('خروج از همه دستگاه‌ها؟'),
                             actions: [
                               TextButton(
                                   onPressed: () => Navigator.pop(c, false),
-                                  child: const Text('انصراف')),
+                                  child: const AppText('انصراف')),
                               FilledButton(
                                   onPressed: () => Navigator.pop(c, true),
-                                  child: const Text('خروج')),
+                                  child: const AppText('خروج')),
                             ],
                           ));
                   if (ok != true) {
@@ -359,7 +371,7 @@ class SessionsPage extends StatelessWidget {
                     }
                   }
                 },
-                child: const Text('خروج از همه دستگاه‌ها')),
+                child: const AppText('خروج از همه دستگاه‌ها')),
           ]),
         ),
       );

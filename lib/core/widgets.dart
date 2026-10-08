@@ -1,16 +1,17 @@
+import 'language.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'api.dart';
 
-const brand = Color(0xFF15383D);
-const accent = Color(0xFFE6AD60);
+const brand = Color(0xFF3F5544);
+const accent = Color(0xFFE8D8C7);
 String plainText(Object? value) => (value ?? '')
     .toString()
     .replaceAll(RegExp(r'<[^>]*>'), '')
     .replaceAll('&amp;', '&')
     .replaceAll('&nbsp;', ' ')
     .replaceAll('&#8217;', '’');
-String money(Object? amount) => '${amount ?? '۰'} ریال';
+String money(Object? amount) => '${amount ?? '0'} ریال';
 Future<void> externalLink(String url) async {
   final uri = Uri.tryParse(url);
   if (uri == null || uri.scheme != 'https' || uri.host.isEmpty) {
@@ -27,7 +28,7 @@ void showError(BuildContext context, Object error) {
   }
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
-      content: Text(
+      content: AppText(
         error is ApiError
             ? error.message
             : 'عملیات انجام نشد؛ دوباره تلاش کنید.',
@@ -44,29 +45,43 @@ class PageBody extends StatelessWidget {
   const PageBody({super.key, required this.children});
   @override
   Widget build(BuildContext context) => ListView(
-        padding: const EdgeInsets.all(20),
-        children:
-            children.expand((w) => [w, const SizedBox(height: 14)]).toList(),
+        padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+        children: [
+          Center(
+              child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 720),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: children
+                          .expand((w) => [w, const SizedBox(height: 16)])
+                          .toList())))
+        ],
       );
 }
 
 class SectionTitle extends StatelessWidget {
   final String title, subtitle;
-  const SectionTitle(this.title, this.subtitle, {super.key});
+  final bool translateTitle;
+  const SectionTitle(this.title, this.subtitle,
+      {super.key, this.translateTitle = true});
   @override
   Widget build(BuildContext context) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
+          AppText(
             title,
+            translate: translateTitle,
             style: Theme.of(
               context,
-            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+            )
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w700, color: brand),
           ),
           const SizedBox(height: 8),
-          Text(
+          AppText(
             subtitle,
-            style: const TextStyle(color: Colors.black54, height: 1.7),
+            style: const TextStyle(color: Color(0xFF627365), height: 1.7),
           ),
         ],
       );
@@ -91,9 +106,9 @@ class InfoCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title),
+                    AppText(title),
                     const SizedBox(height: 6),
-                    Text(
+                    AppText(
                       value,
                       style: const TextStyle(
                         fontSize: 20,
@@ -126,7 +141,10 @@ class _RemoteViewState extends State<RemoteView> {
   }
 
   void reload() {
-    setState(() => future = widget.load());
+    final next = widget.load();
+    setState(() {
+      future = next;
+    });
   }
 
   @override
@@ -146,7 +164,7 @@ class _RemoteViewState extends State<RemoteView> {
                     const Icon(Icons.cloud_off_outlined,
                         size: 48, color: brand),
                     const SizedBox(height: 16),
-                    Text(
+                    AppText(
                       snapshot.error is ApiError
                           ? (snapshot.error as ApiError).message
                           : 'دریافت اطلاعات انجام نشد.',
@@ -155,7 +173,7 @@ class _RemoteViewState extends State<RemoteView> {
                     const SizedBox(height: 20),
                     FilledButton(
                       onPressed: reload,
-                      child: const Text('تلاش دوباره'),
+                      child: const AppText('تلاش دوباره'),
                     ),
                   ],
                 ),
@@ -247,14 +265,24 @@ String displayValue(dynamic value) {
     return '—';
   }
   if (value is bool) {
-    return value ? 'بله' : 'خیر';
+    return tr(value ? 'بله' : 'خیر');
   }
   if (value is Map) {
     return value.entries
         .where((e) =>
             labels.containsKey(e.key) &&
             !['id', 'reference_id', 'reference_type'].contains(e.key))
-        .map((e) => '${labels[e.key]}: ${displayValue(e.value)}')
+        .map((e) => '${tr(labels[e.key]!)}: ${[
+              'name',
+              'title',
+              'address',
+              'line1',
+              'email',
+              'mobile',
+              'recipient_name',
+              'sku',
+              'code'
+            ].contains(e.key) ? plainText(e.value) : displayValue(e.value)}')
         .join('\n');
   }
   if (value is List) {
@@ -273,36 +301,75 @@ String displayValue(dynamic value) {
     'dog': 'سگ',
     'cat': 'گربه'
   };
-  return names[value.toString()] ?? plainText(value);
+  return names.containsKey(value.toString())
+      ? tr(names[value.toString()]!)
+      : plainText(value);
 }
 
 class RecordCard extends StatelessWidget {
   final Json record;
   const RecordCard(this.record, {super.key});
   @override
-  Widget build(BuildContext context) => Card(
+  Widget build(BuildContext context) {
+    LanguageScope.of(context);
+    final entries = record.entries
+        .where((e) =>
+            e.value != null &&
+            labels.containsKey(e.key) &&
+            !['id', 'reference_id', 'reference_type'].contains(e.key))
+        .toList();
+    return Card(
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: record.entries
-                .where((e) =>
-                    e.value != null &&
-                    labels.containsKey(e.key) &&
-                    !['id', 'reference_id', 'reference_type'].contains(e.key))
-                .map(
-                  (e) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: SelectableText(
-                      '${labels[e.key]}: ${displayValue(e.value)}',
-                      style: const TextStyle(height: 1.6),
-                    ),
-                  ),
-                )
-                .toList(),
-          ),
-        ),
-      );
+            padding: const EdgeInsets.all(20),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var i = 0; i < entries.length; i++) ...[
+                    if (i > 0)
+                      const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 10),
+                          child: Divider(height: 1)),
+                    Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                              flex: 2,
+                              child: AppText(labels[entries[i].key]!,
+                                  style: const TextStyle(
+                                      color: Color(0xFF627365), fontSize: 13))),
+                          const SizedBox(width: 16),
+                          Expanded(
+                              flex: 3,
+                              child: SelectableText(
+                                  [
+                                    'name',
+                                    'title',
+                                    'address',
+                                    'line1',
+                                    'email',
+                                    'mobile',
+                                    'recipient_name',
+                                    'sku',
+                                    'code'
+                                  ].contains(entries[i].key)
+                                      ? plainText(entries[i].value)
+                                      : displayValue(entries[i].value),
+                                  textDirection: [
+                                    'mobile',
+                                    'email',
+                                    'postal_code',
+                                    'code',
+                                    'sku'
+                                  ].contains(entries[i].key)
+                                      ? TextDirection.ltr
+                                      : null,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.6))),
+                        ]),
+                  ],
+                ])));
+  }
 }
 
 class RecordsPage extends StatefulWidget {
@@ -369,7 +436,7 @@ class _RecordsPageState extends State<RecordsPage> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: Text(widget.title)),
+        appBar: AppBar(title: AppText(widget.title)),
         body: RefreshIndicator(
           onRefresh: () => load(reset: true),
           child: PageBody(
@@ -377,20 +444,90 @@ class _RecordsPageState extends State<RecordsPage> {
               ...items.map(RecordCard.new),
               if (busy) const Center(child: CircularProgressIndicator()),
               if (error != null)
-                Text(
+                AppText(
                   error is ApiError
                       ? (error as ApiError).message
                       : 'دریافت اطلاعات انجام نشد.',
                 ),
               if (!busy && items.isEmpty && error == null)
-                const Text('هنوز اطلاعاتی ثبت نشده است.'),
+                const AppText('هنوز اطلاعاتی ثبت نشده است.'),
               if (!busy && (cursor != null || error != null))
                 OutlinedButton(
                   onPressed: () => load(reset: items.isEmpty),
-                  child: Text(error != null ? 'تلاش دوباره' : 'نمایش بیشتر'),
+                  child: AppText(error != null ? 'تلاش دوباره' : 'نمایش بیشتر'),
                 ),
             ],
           ),
         ),
       );
+}
+
+class BrandFeature extends StatelessWidget {
+  final String title, subtitle;
+  final IconData icon;
+  final Widget? action;
+  const BrandFeature(
+      {super.key,
+      required this.title,
+      required this.subtitle,
+      required this.icon,
+      this.action});
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(26),
+        decoration: BoxDecoration(
+            color: const Color(0xFF6B826F),
+            borderRadius: BorderRadius.circular(30)),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                  color: accent.withValues(alpha: .15),
+                  borderRadius: BorderRadius.circular(16)),
+              child: Icon(icon, color: accent, size: 30)),
+          const SizedBox(height: 20),
+          AppText(title,
+              style: const TextStyle(
+                  color: accent,
+                  fontSize: 26,
+                  fontWeight: FontWeight.w700,
+                  height: 1.5)),
+          const SizedBox(height: 10),
+          AppText(subtitle,
+              style: const TextStyle(color: Color(0xFFFFFCF6), height: 1.8)),
+          if (action != null) ...[const SizedBox(height: 22), action!],
+        ]),
+      );
+}
+
+class ActionTile extends StatelessWidget {
+  final String title, subtitle;
+  final IconData icon;
+  final VoidCallback onTap;
+  const ActionTile(
+      {super.key,
+      required this.title,
+      required this.subtitle,
+      required this.icon,
+      required this.onTap});
+  @override
+  Widget build(BuildContext context) => Card(
+      child: InkWell(
+          borderRadius: BorderRadius.circular(24),
+          onTap: onTap,
+          child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(icon, color: brand, size: 30),
+                    const SizedBox(height: 18),
+                    AppText(title,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w700, fontSize: 16)),
+                    const SizedBox(height: 6),
+                    AppText(subtitle,
+                        style: const TextStyle(
+                            color: Color(0xFF627365), fontSize: 12))
+                  ]))));
 }

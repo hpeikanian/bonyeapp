@@ -1,3 +1,4 @@
+import '../core/language.dart';
 import 'package:flutter/material.dart';
 import '../core/api.dart';
 import '../core/widgets.dart';
@@ -7,12 +8,12 @@ class RemindersPage extends StatelessWidget {
   const RemindersPage({super.key, required this.api});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('یادآوری خرید مجدد')),
+        appBar: AppBar(title: const AppText('یادآوری خرید مجدد')),
         body: RemoteView(
           load: () => api.request('GET', '/reminders?limit=100'),
           builder: (data, reload) => PageBody(
             children: [
-              const Text(
+              const AppText(
                 'یادآوری‌ها در حساب بنیه ثبت می‌شوند؛ ارسال اعلان گوشی هنوز در سرور فعال نیست.',
               ),
               FilledButton(
@@ -26,7 +27,7 @@ class RemindersPage extends StatelessWidget {
                     reload();
                   }
                 },
-                child: const Text('افزودن یادآوری'),
+                child: const AppText('افزودن یادآوری'),
               ),
               ...(data['items'] as List).cast<Json>().map(
                     (r) => Column(
@@ -49,7 +50,7 @@ class RemindersPage extends StatelessWidget {
                                 }
                               }
                             },
-                            child: const Text('غیرفعال‌کردن یادآوری'),
+                            child: const AppText('غیرفعال‌کردن یادآوری'),
                           ),
                       ],
                     ),
@@ -91,7 +92,7 @@ class _ReminderFormState extends State<ReminderForm> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('یادآوری جدید')),
+        appBar: AppBar(title: const AppText('یادآوری جدید')),
         body: RemoteView(
           load: load,
           builder: (data, reload) {
@@ -103,13 +104,15 @@ class _ReminderFormState extends State<ReminderForm> {
               children: [
                 DropdownButtonFormField<int>(
                   value: pet,
-                  decoration: const InputDecoration(labelText: 'پت (اختیاری)'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'پت (اختیاری)'),
                   items: (data['pets'] as List)
                       .cast<Json>()
                       .map(
                         (p) => DropdownMenuItem(
                           value: p['id'] as int,
-                          child: Text('${p['name']}'),
+                          child: AppText('${p['name']}'),
                         ),
                       )
                       .toList(),
@@ -122,13 +125,14 @@ class _ReminderFormState extends State<ReminderForm> {
                 ),
                 DropdownButtonFormField<int>(
                   value: product,
-                  decoration:
-                      const InputDecoration(labelText: 'محصول (اختیاری)'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'محصول (اختیاری)'),
                   items: products.entries
                       .map(
                         (e) => DropdownMenuItem(
                           value: e.key,
-                          child: Text('${e.value['name']}'),
+                          child: AppText('${e.value['name']}'),
                         ),
                       )
                       .toList(),
@@ -144,8 +148,9 @@ class _ReminderFormState extends State<ReminderForm> {
                   enabled: !busy,
                   onChanged: (_) => key = operationKey(),
                   keyboardType: TextInputType.number,
-                  decoration:
-                      const InputDecoration(labelText: 'فاصله خرید (روز)'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'فاصله خرید (روز)'),
                 ),
                 TextField(
                   controller: quantity,
@@ -154,16 +159,19 @@ class _ReminderFormState extends State<ReminderForm> {
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
-                  decoration: const InputDecoration(
+                  decoration: AppInputDecoration(
+                    english: LanguageScope.of(context).english,
                     labelText: 'مصرف روزانه (اختیاری)',
                   ),
                 ),
                 DropdownButtonFormField<String>(
                   value: unit,
-                  decoration: const InputDecoration(labelText: 'واحد مصرف'),
+                  decoration: AppInputDecoration(
+                      english: LanguageScope.of(context).english,
+                      labelText: 'واحد مصرف'),
                   items: const [
-                    DropdownMenuItem(value: 'g', child: Text('گرم')),
-                    DropdownMenuItem(value: 'tablet', child: Text('قرص')),
+                    DropdownMenuItem(value: 'g', child: AppText('گرم')),
+                    DropdownMenuItem(value: 'tablet', child: AppText('قرص')),
                   ],
                   onChanged: busy
                       ? null
@@ -193,7 +201,7 @@ class _ReminderFormState extends State<ReminderForm> {
                             });
                           }
                         },
-                  child: Text('موعد بعدی: $date'),
+                  child: AppText('موعد بعدی: $date'),
                 ),
                 FilledButton(
                   onPressed: busy
@@ -247,7 +255,7 @@ class _ReminderFormState extends State<ReminderForm> {
                             }
                           }
                         },
-                  child: const Text('ثبت یادآوری'),
+                  child: const AppText('ثبت یادآوری'),
                 ),
               ],
             );
