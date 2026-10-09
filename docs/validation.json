@@ -48,8 +48,8 @@
   ],
   "blockers": [],
   "apk": {
-    "bytes": 88913407,
-    "sha256": "f450a1009b2cf2c5bce249ee5bbce8b9fe981db2400bd093275b58422e07fb7d",
+    "bytes": 110148163,
+    "sha256": "2a80675e024cb8efdbc1829a911b33196e769f3ddbb1b76ce4b5f7762385e340",
     "download_zip": "downloads/bonye-android-v0.3.2.zip"
   },
   "limitations": [
