@@ -83,6 +83,7 @@ class _BonyeAppState extends State<BonyeApp> {
               useMaterial3: true,
               fontFamily:
                   appLanguage.english ? 'NotoSansArabic' : 'IranianSans',
+              fontFamilyFallback: const ['NotoSansArabic'],
               primaryTextTheme: TextTheme(
                   labelLarge: TextStyle(
                       fontFamily: appLanguage.english
