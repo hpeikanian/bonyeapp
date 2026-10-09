@@ -1,6 +1,6 @@
 ## دانلود نسخه آزمایشی اندروید
 
-[دانلود ZIP نصب اندروید ARM64، نسخه 0.3.1](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.3.1.zip)
+[دانلود ZIP نصب اندروید ARM64، نسخه 0.3.2](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.3.2.zip)
 
 فایل ZIP را استخراج کنید و APK داخل آن را روی گوشی اندروید ۶ یا بالاتر نصب کنید. این نسخه با امضای آزمایشی است و تست روی دستگاه واقعی هنوز انجام نشده است.
 
@@ -102,3 +102,7 @@ flutter run --dart-define=BONYE_API_BASE=https://YOUR-STAGING-HOST/totallsystem/
 ## انتشار مشترک خودکار
 
 نسخه ۰.۲.۳+۶ بررسی نسخه جدید، اعلان اختیاری و صفحه دریافت آپدیت اندروید را اضافه می‌کند. نسخه وب از همان سورس ساخته می‌شود. راهنمای فعال‌سازی یک‌باره FTPS و Secret امضای موجود در [مخزن وب](https://github.com/hpeikanian/bonye-webapp/blob/main/docs/AUTO_UPDATES_FA.md) است. نصب این APK یک بار برای اضافه‌شدن بررسی آپدیت لازم است؛ پس از آن انتقال دستی ZIP در هر انتشار لازم نیست. اتصال هاست و GitHub Secrets هنوز توسط صاحب پروژه باید برقرار شود.
+
+## فونت فارسی در ۰٫۳٫۲
+
+فایل‌های Iranian Sans Regular و Bold ارسالی مالک پروژه داخل بسته قرار گرفتند. رابط فارسی از IranianSans و رابط انگلیسی از فونت قبلی استفاده می‌کند؛ دانلود فونت هنگام اجرا لازم نیست. نام داخلی این فایل‌ها Iranian Sans است، نه IRANSans.
