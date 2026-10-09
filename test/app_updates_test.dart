@@ -51,6 +51,7 @@ void main() {
     expect(tester.takeException(), isNull);
     await tester.pumpWidget(const SizedBox());
     updates.dispose();
+    debugDefaultTargetPlatformOverride = null;
   });
   testWidgets(
       'opening update page does not notify ancestors during navigation build',

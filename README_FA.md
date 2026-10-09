@@ -1,6 +1,6 @@
 ## دانلود نسخه آزمایشی اندروید
 
-[دانلود ZIP نصب اندروید ARM64، نسخه 0.3.3](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.3.3.zip)
+[دانلود ZIP نصب اندروید ARM64، نسخه 0.3.4](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.3.4.zip)
 
 فایل ZIP را استخراج کنید و APK داخل آن را روی گوشی اندروید ۶ یا بالاتر نصب کنید. این نسخه با امضای آزمایشی است و تست روی دستگاه واقعی هنوز انجام نشده است.
 
@@ -108,3 +108,5 @@ flutter run --dart-define=BONYE_API_BASE=https://YOUR-STAGING-HOST/totallsystem/
 فایل‌های Iranian Sans Regular و Bold ارسالی مالک پروژه داخل بسته قرار گرفتند. رابط فارسی از IranianSans و رابط انگلیسی از فونت قبلی استفاده می‌کند؛ دانلود فونت هنگام اجرا لازم نیست. نام داخلی این فایل‌ها Iranian Sans است، نه IRANSans.
 
 نسخه ۰٫۳٫۳ از فایل‌های جدید IRANSans Regular و Bold ارسالی کاربر استفاده می‌کند.
+
+نسخه ۰٫۳٫۴ خطای No Overlay widget found در اعلان آپدیت را برطرف می‌کند.
