@@ -1,6 +1,6 @@
 ## دانلود نسخه آزمایشی اندروید
 
-[دانلود ZIP نصب اندروید ARM64، نسخه 0.2.1](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.2.1.zip)
+[دانلود ZIP نصب اندروید ARM64، نسخه 0.2.3](https://github.com/hpeikanian/bonyeapp/raw/refs/heads/main/downloads/bonye-android-v0.2.3.zip)
 
 فایل ZIP را استخراج کنید و APK داخل آن را روی گوشی اندروید ۶ یا بالاتر نصب کنید. این نسخه با امضای آزمایشی است و تست روی دستگاه واقعی هنوز انجام نشده است.
 
@@ -94,3 +94,7 @@ flutter run --dart-define=BONYE_API_BASE=https://YOUR-STAGING-HOST/totallsystem/
 اپ تصویر HTTPS دریافتی در image_url را نمایش می‌دهد. گزینه مشاهده در سایت از API موجود استفاده می‌کند. خرید فوری تا دریافت quick_buy_available=true از سرور غیرفعال است؛ مسیر جدید و ورود امن سایت باید ابتدا در بنیه/وردپرس پیاده و نصب شوند. نمایش سفارش‌ها با کانال خرید، نام شعبه در صورت ارائه و جزئیات فاکتور اضافه شد؛ کانال نامعلوم حدس زده نمی‌شود.
 
 [قرارداد و پرامپت توسعه سرور و وردپرس](docs/commerce/BACKEND_REQUEST_FA.md)
+
+## انتشار مشترک خودکار
+
+نسخه ۰.۲.۳+۶ بررسی نسخه جدید، اعلان اختیاری و صفحه دریافت آپدیت اندروید را اضافه می‌کند. نسخه وب از همان سورس ساخته می‌شود. راهنمای فعال‌سازی یک‌باره FTPS و Secret امضای موجود در [مخزن وب](https://github.com/hpeikanian/bonye-webapp/blob/main/docs/AUTO_UPDATES_FA.md) است. نصب این APK یک بار برای اضافه‌شدن بررسی آپدیت لازم است؛ پس از آن انتقال دستی ZIP در هر انتشار لازم نیست. اتصال هاست و GitHub Secrets هنوز توسط صاحب پروژه باید برقرار شود.

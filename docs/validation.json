@@ -1,5 +1,5 @@
 {
-  "source_version": "0.2.2",
+  "source_version": "0.2.3+6",
   "api_contract": "53.0.0",
   "passed": {
     "dart_syntax_files": 20,
@@ -8,7 +8,7 @@
     "android_xml": true,
     "gradle_wrapper_checksum": true,
     "flutter_analyze": true,
-    "flutter_tests": 20,
+    "flutter_tests": 24,
     "android_sdk_installed": true,
     "flutter_version": "3.29.3",
     "dart_version": "3.7.2",
@@ -21,7 +21,7 @@
     "min_sdk": 23,
     "target_sdk": 35,
     "setup_script_repeatable": true,
-    "english_copy_catalog_entries": 327,
+    "english_copy_catalog_entries": 338,
     "locale_persistence": true,
     "rtl_ltr_widget_tests": true,
     "english_form_api_values": true,
@@ -31,20 +31,26 @@
     "checkout_host_and_duplicate_tap_tests": true,
     "quick_buy_quantity_stock_limit": true,
     "quantity_idempotency_binding": true,
-    "checkout_locale_fragment_preserved": true
+    "checkout_locale_fragment_preserved": true,
+    "android_update_build_comparison": true,
+    "android_update_url_and_signer_manifest_validation": true,
+    "android_update_single_flight_throttle_and_failure": true,
+    "update_page_navigation_widget": true
   },
   "unrun": [
-    "physical_device_tests_for_v0.2.1",
     "live_commerce_integration",
     "WordPress_unified_purchase_history",
-    "backend_checkout_bridge"
+    "backend_checkout_bridge",
+    "physical_device_update_installation_0.2.3",
+    "live_update_manifest",
+    "production_FTPS_publication"
   ],
   "blockers": [],
   "apk": {
-    "file": "bonYe-v0.2.2.apk",
-    "bytes": 86448817,
-    "sha256": "8af55d3a5918699340f583ecea364e312dfd8445ece1040a22359e171b4fb198",
-    "download_zip": "downloads/bonye-android-v0.2.2.zip"
+    "file": "bonYe-v0.2.3.apk",
+    "bytes": 107716500,
+    "sha256": "7321f714989e18fb2d076f21bc7bd867d3465ba028a602195124dfb7712b9982",
+    "download_zip": "downloads/bonye-android-v0.2.3.zip"
   },
   "limitations": [
     "Internal debug build, not a store release.",
