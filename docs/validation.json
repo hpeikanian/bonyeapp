@@ -1,5 +1,5 @@
 {
-  "source_version": "0.3.0+7",
+  "source_version": "0.3.2+9",
   "api_contract": "53.0.0",
   "passed": {
     "dart_syntax_files": 20,
@@ -35,7 +35,8 @@
     "android_update_build_comparison": true,
     "android_update_url_and_signer_manifest_validation": true,
     "android_update_single_flight_throttle_and_failure": true,
-    "update_page_navigation_widget": true
+    "update_page_navigation_widget": true,
+    "persian_font_and_english_font_switch": true
   },
   "unrun": [
     "live_commerce_integration",
@@ -47,9 +48,9 @@
   ],
   "blockers": [],
   "apk": {
-    "bytes": 88844347,
-    "sha256": "c55545da820cd3c8c3207712ec4684765285da3b6f1047cadcc65584effec407",
-    "download_zip": "downloads/bonye-android-v0.3.0.zip"
+    "bytes": 88913407,
+    "sha256": "f450a1009b2cf2c5bce249ee5bbce8b9fe981db2400bd093275b58422e07fb7d",
+    "download_zip": "downloads/bonye-android-v0.3.2.zip"
   },
   "limitations": [
     "Internal debug build, not a store release.",
@@ -61,7 +62,7 @@
     "New image_url, branch_name, purchase_origin and checkout-link require the documented backend changes; no live server was changed."
   ],
   "compatible_backend_reviewed": "53.2.2",
-  "app_version": "0.3.0+7",
+  "app_version": "0.3.2+9",
   "ui_redesign": {
     "flutter_tests": 26,
     "shared_android_web": true,
