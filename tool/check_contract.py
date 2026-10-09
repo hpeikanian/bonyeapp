@@ -37,6 +37,8 @@ verify('/me/addresses','POST',{'label':'خانه','recipient_name':'کاربر',
 verify('/me/preferences','PATCH',{'sms_marketing':False,'consent_version':'bonye-app-v1'})
 verify('/content/articles/{id}/state','PUT',{'favorite':True,'revision':0})
 verify('/content/podcasts/{id}/state','PUT',{'favorite':True,'position_seconds':10,'completed':False,'revision':0})
+# Additional routes are proposed and require deployment of the documented backend changes.
+spec['paths'].update(json.loads((root/'docs/pets/api-additions.json').read_text())['paths'])
 # Verify all literal and interpolated API routes used in source exist in the contract.
 checked_routes=set()
 for file in (root/'lib').rglob('*.dart'):

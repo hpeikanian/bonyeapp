@@ -6,7 +6,7 @@ root = Path(__file__).resolve().parents[1]
 catalog = (root / 'lib/core/translations.dart').read_text()
 keys = set(re.findall(r'^\s*[\'"](.+?)[\'"]\s*:', catalog, re.MULTILINE))
 # Separators and digit alphabets are used for parsing, not visible UI labels.
-non_copy = {'،', '۰۱۲۳۴۵۶۷۸۹', '٠١٢٣٤٥٦٧٨٩'}
+non_copy = {'٫', '،', '۰۱۲۳۴۵۶۷۸۹', '٠١٢٣٤٥٦٧٨٩'}
 missing = []
 paths = [root / 'lib/core/api.dart', root / 'lib/core/widgets.dart', *sorted((root / 'lib/screens').glob('*.dart'))]
 for path in paths:
