@@ -1,5 +1,5 @@
 {
-  "source_version": "0.2.3+6",
+  "source_version": "0.3.0+7",
   "api_contract": "53.0.0",
   "passed": {
     "dart_syntax_files": 20,
@@ -8,7 +8,7 @@
     "android_xml": true,
     "gradle_wrapper_checksum": true,
     "flutter_analyze": true,
-    "flutter_tests": 24,
+    "flutter_tests": 26,
     "android_sdk_installed": true,
     "flutter_version": "3.29.3",
     "dart_version": "3.7.2",
@@ -21,7 +21,7 @@
     "min_sdk": 23,
     "target_sdk": 35,
     "setup_script_repeatable": true,
-    "english_copy_catalog_entries": 338,
+    "english_copy_catalog_entries": 344,
     "locale_persistence": true,
     "rtl_ltr_widget_tests": true,
     "english_form_api_values": true,
